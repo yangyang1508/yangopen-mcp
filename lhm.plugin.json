@@ -1,0 +1,1951 @@
+{
+  "identifier": "yangopen",
+  "name": "YangOpen",
+  "version": "1.7.0",
+  "description": "Hosted remote MCP server with 27 tools: Vietnamese-first text to speech (8 languages free, about 2,600 Plus voices), background removal, photo sharpening and colorizing, PDF merge/split/compress, PDF to Markdown, image convert and resize, QR codes and audio to text. OAuth sign-in at the first tool call; free daily allowance.",
+  "author": "YangOpen",
+  "authorUrl": "https://yangopen.com",
+  "homepage": "https://yangopen.com/guides/claude-mcp-connector/",
+  "cloudEndpoint": "https://yangopen.com/mcp",
+  "icon": "https://yangopen.com/assets/apple-touch-icon.png",
+  "category": "productivity",
+  "tags": [
+    "text-to-speech",
+    "vietnamese",
+    "pdf",
+    "image",
+    "remove-background",
+    "qr-code",
+    "speech-to-text",
+    "ocr"
+  ],
+  "localizations": [
+    {
+      "locale": "vi-VN",
+      "name": "YangOpen",
+      "description": "Máy chủ MCP từ xa với 27 công cụ: đọc văn bản thành giọng nói (ưu tiên tiếng Việt, 8 ngôn ngữ miễn phí, khoảng 2.600 giọng Plus), xoá phông, làm nét và tô màu ảnh, gộp/tách/nén PDF, PDF sang Markdown, đổi định dạng và cỡ ảnh, mã QR, ghi âm thành chữ. Đăng nhập OAuth ở lần gọi công cụ đầu; có lượt miễn phí mỗi ngày.",
+      "tags": [
+        "chuyển văn bản thành giọng nói",
+        "tiếng Việt",
+        "PDF",
+        "ảnh",
+        "xoá phông",
+        "mã QR"
+      ]
+    }
+  ],
+  "tools": [
+    {
+      "name": "list_voices",
+      "title": "List or search the voices",
+      "description": "The YangOpen voices. tier \"free\" (default): sixteen free voices — two Vietnamese (Southern accent), American and British English, Mandarin, Japanese, Korean, Thai, French and Spanish. tier \"plus\": the paid voices, about 2,600 — 195 Vietnamese (Northern, Central and Southern), English, Spanish, Mandarin, French, Japanese and Korean; search them by language, gender and words in the name or style. Returns the id to pass to text_to_speech (free) or text_to_speech_plus (plus).",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "tier": {
+            "type": "string",
+            "enum": [
+              "free",
+              "plus"
+            ],
+            "description": "free (default) or plus.",
+            "default": "free"
+          },
+          "language": {
+            "type": "string",
+            "description": "Optional language: vi, en, en-US, en-GB, zh, ja, ko, th, fr or es."
+          },
+          "gender": {
+            "type": "string",
+            "enum": [
+              "female",
+              "male"
+            ],
+            "description": "Optional."
+          },
+          "query": {
+            "type": "string",
+            "description": "Optional words to match in the name or style, e.g. \"Bắc\", \"tin tức\", \"Hoài My\"."
+          },
+          "limit": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50,
+            "default": 20,
+            "description": "How many to return, up to 50."
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "voices": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "language": {
+                  "type": "string"
+                },
+                "gender": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "tier": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "id",
+                "name",
+                "language",
+                "gender",
+                "description",
+                "tier"
+              ]
+            }
+          },
+          "total": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "voices",
+          "total"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "text_to_speech",
+      "title": "Read text aloud as an MP3 (free voices)",
+      "description": "Turn text into speech with a free YangOpen voice and get a link to the MP3. It costs no credit; it counts against the user's free daily allowance. Up to 3,000 characters per call: split longer text at sentence ends and call once per part. The link works for 24 hours; give it to the user exactly as returned. The text is sent to an outside speech service to be read; it is not stored.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "The text to read, up to 3,000 characters.",
+            "minLength": 1,
+            "maxLength": 3000
+          },
+          "voice": {
+            "type": "string",
+            "description": "A free voice id from list_voices. Default yo-baotram (Vietnamese, female).",
+            "default": "yo-baotram"
+          },
+          "speed": {
+            "type": "number",
+            "description": "Reading speed from 0.5 to 2.0. Default 1.0.",
+            "minimum": 0.5,
+            "maximum": 2,
+            "default": 1
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "voice": {
+            "type": "string"
+          },
+          "characters": {
+            "type": "integer"
+          },
+          "duration_seconds": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "voice",
+          "characters",
+          "duration_seconds"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "text_to_speech_plus",
+      "title": "Read text aloud as an MP3 (Plus voices, uses credit)",
+      "description": "Turn text into speech with a Plus voice and get a link to the MP3. Spends the user's prepaid YangOpen credit: 25 credits per 1,000 characters, rounded up to whole credits. The charge is made only when the MP3 is ready, and the answer states what was charged and the balance left. Up to 1,000 characters per call for Vietnamese voices and 400 for the other languages; split longer text at sentence ends. Before a long job, tell the user the cost (characters ÷ 1,000 × 25 credits) and check get_balance. The link works for 24 hours; give it to the user exactly as returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "The text to read, up to 1,000 characters.",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "voice": {
+            "type": "string",
+            "description": "A Plus voice id from list_voices with tier \"plus\", e.g. yo-vn0001."
+          },
+          "speed": {
+            "type": "number",
+            "description": "Reading speed from 0.5 to 2.0. Default 1.0.",
+            "minimum": 0.5,
+            "maximum": 2,
+            "default": 1
+          }
+        },
+        "required": [
+          "text",
+          "voice"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "voice": {
+            "type": "string"
+          },
+          "characters": {
+            "type": "integer"
+          },
+          "duration_seconds": {
+            "type": "integer"
+          },
+          "credits_charged": {
+            "type": "integer"
+          },
+          "balance_credits": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "voice",
+          "characters",
+          "duration_seconds",
+          "credits_charged",
+          "balance_credits"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_balance",
+      "title": "Credit balance",
+      "description": "The user's YangOpen credit balance, what it buys (Plus voice characters, paid image runs), the prices, and where to top up. Changes nothing.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "balance_credits": {
+            "type": "integer"
+          },
+          "plus_characters": {
+            "type": "integer"
+          },
+          "credits_per_1000_characters": {
+            "type": "integer"
+          },
+          "top_up_url": {
+            "type": "string"
+          },
+          "image_runs": {
+            "type": "integer"
+          },
+          "credits_per_image_run": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "balance_credits",
+          "plus_characters",
+          "credits_per_1000_characters",
+          "top_up_url"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "get_upload_link",
+      "title": "Get a link to upload a file",
+      "description": "A one-time page where the user uploads the file a tool needs: a photo, another picture, a PDF or a recording, up to 25 MB each. They may choose several at once (up to 20, for merge_pdf or images_to_pdf); they arrive in the order chosen. It gives the file_id to pass to the tools. You cannot hand over a file from this chat yourself: give the user the link, ask them to open it and choose the file, and continue when they say it is done. In a client that can run shell commands (Claude Code), upload a local file yourself with the upload_command. The link works for 1 hour; the file is kept for 24 hours. Free.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "upload_url": {
+            "type": "string"
+          },
+          "file_id": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "upload_command": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "upload_url",
+          "file_id",
+          "expires_at",
+          "upload_command"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "remove_background",
+      "title": "Remove a photo's background",
+      "description": "Cut the main subject out of a photo and get a PNG with a transparent background. 5 free runs a day for each image tool, then 25 credits a run, charged only when the result is ready. Give the photo as file_id (the user uploads it through get_upload_link) or image_url. The result link works for 24 hours; give it to the user exactly as returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "The file_id from get_upload_link, once the user has uploaded the photo there."
+          },
+          "image_url": {
+            "type": "string",
+            "description": "Or a public https link to a JPEG, PNG or WebP photo. A result link from another YangOpen image tool works too."
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "credits_charged": {
+            "type": "integer"
+          },
+          "free_run": {
+            "type": "boolean"
+          },
+          "free_runs_left": {
+            "type": "integer"
+          },
+          "balance_credits": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "content_type",
+          "bytes",
+          "credits_charged",
+          "free_run"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "colorize_photo",
+      "title": "Colorize a black-and-white photo",
+      "description": "Colour a black-and-white or toned (sepia) photo, with faces restored. A photo that already has colour comes back as it was and costs nothing. 5 free runs a day for each image tool, then 25 credits a run, charged only when the result is ready. Give the photo as file_id (the user uploads it through get_upload_link) or image_url. The result link works for 24 hours; give it to the user exactly as returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "The file_id from get_upload_link, once the user has uploaded the photo there."
+          },
+          "image_url": {
+            "type": "string",
+            "description": "Or a public https link to a JPEG, PNG or WebP photo. A result link from another YangOpen image tool works too."
+          },
+          "restore_faces": {
+            "type": "boolean",
+            "description": "Restore the faces as well. Default true.",
+            "default": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "credits_charged": {
+            "type": "integer"
+          },
+          "free_run": {
+            "type": "boolean"
+          },
+          "free_runs_left": {
+            "type": "integer"
+          },
+          "balance_credits": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "content_type",
+          "bytes",
+          "credits_charged",
+          "free_run"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "sharpen_image",
+      "title": "Sharpen and enlarge a photo",
+      "description": "Make a blurry, small or old photo sharp and larger (AI upscaling). It can also restore faces, and clean scratches and dust from an old print. 5 free runs a day for each image tool, then 25 credits a run, charged only when the result is ready. Give the photo as file_id (the user uploads it through get_upload_link) or image_url. The result link works for 24 hours; give it to the user exactly as returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "The file_id from get_upload_link, once the user has uploaded the photo there."
+          },
+          "image_url": {
+            "type": "string",
+            "description": "Or a public https link to a JPEG, PNG or WebP photo. A result link from another YangOpen image tool works too."
+          },
+          "enhance_faces": {
+            "type": "boolean",
+            "description": "Restore faces too. Default false.",
+            "default": false
+          },
+          "restore_old_photo": {
+            "type": "boolean",
+            "description": "Clean scratches, dust and peeling from an old print. Default false.",
+            "default": false
+          },
+          "detail": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "default": 70,
+            "description": "How much fine texture to keep, 0 to 100: higher keeps more detail, lower removes more noise. Default 70."
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "credits_charged": {
+            "type": "integer"
+          },
+          "free_run": {
+            "type": "boolean"
+          },
+          "free_runs_left": {
+            "type": "integer"
+          },
+          "balance_credits": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "content_type",
+          "bytes",
+          "credits_charged",
+          "free_run"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "scan_document",
+      "title": "Scan a photo of a page",
+      "description": "Turn a phone photo of a page (a document, a receipt, a page of a book) into a flat, straight scan: the page is found, cut out of the background and unbent, and comes back as a JPEG. 5 free runs a day for each image tool, then 25 credits a run, charged only when the result is ready. Give the photo as file_id (the user uploads it through get_upload_link) or image_url. The result link works for 24 hours; give it to the user exactly as returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "The file_id from get_upload_link, once the user has uploaded the photo there."
+          },
+          "image_url": {
+            "type": "string",
+            "description": "Or a public https link to a JPEG, PNG or WebP photo. A result link from another YangOpen image tool works too."
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "credits_charged": {
+            "type": "integer"
+          },
+          "free_run": {
+            "type": "boolean"
+          },
+          "free_runs_left": {
+            "type": "integer"
+          },
+          "balance_credits": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "content_type",
+          "bytes",
+          "credits_charged",
+          "free_run"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": false,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "convert_vietnamese_font",
+      "title": "Fix Vietnamese text typed in the old fonts (TCVN3, VNI)",
+      "description": "Turn Vietnamese text typed in the old fonts (TCVN3/ABC such as .VnTime, or VNI such as VNI-Times) into Unicode, so it reads right in any font: \"Céng hßa x· héi chñ nghÜa\" becomes \"Cộng hòa xã hội chủ nghĩa\". The old font is guessed from the text unless you name it. Up to 5,000 characters a call. Free. For a whole Word or Excel file, send the user to https://yangopen.com/vi/tools/font-to-unicode/.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "The text as it looks now, copied from the document."
+          },
+          "font": {
+            "type": "string",
+            "enum": [
+              "auto",
+              "tcvn3",
+              "tcvn3-upper",
+              "vni"
+            ],
+            "default": "auto",
+            "description": "The old font's table: tcvn3 (.VnTime and the other .Vn fonts), tcvn3-upper (.VnTimeH and the other fonts ending in H, all capitals), vni (VNI-Times and the other VNI fonts), or auto (guess). Default auto."
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "font": {
+            "type": "string"
+          },
+          "letters_changed": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "text",
+          "font",
+          "letters_changed"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "convert_time",
+      "title": "Convert a time between time zones",
+      "description": "What a time in one place is in other places, with daylight saving applied for that date. Name zones the IANA way (Asia/Ho_Chi_Minh, America/New_York, Europe/London, Australia/Sydney) or UTC. Free.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "from_zone": {
+            "type": "string",
+            "description": "The zone the time is in, like Asia/Ho_Chi_Minh."
+          },
+          "to_zones": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "maxItems": 20,
+            "description": "The zones to show it in, like [\"America/New_York\", \"Europe/London\"]."
+          },
+          "time": {
+            "type": "string",
+            "description": "The time on a 24-hour clock, like 09:30 or 21:00. Default: now."
+          },
+          "date": {
+            "type": "string",
+            "description": "The date in from_zone, like 2026-11-05. Default: today in from_zone."
+          }
+        },
+        "required": [
+          "from_zone",
+          "to_zones"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "utc": {
+            "type": "string"
+          },
+          "from": {
+            "type": "object"
+          },
+          "times": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        },
+        "required": [
+          "utc",
+          "from",
+          "times"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "number_to_words",
+      "title": "Write a number in words",
+      "description": "Write a number in Vietnamese and English words, for an invoice or a receipt: 1.250.000 becomes \"một triệu hai trăm năm mươi nghìn\" and \"one million two hundred fifty thousand\". A dot or comma before exactly three digits groups thousands (1.250, 12,500); before other digits it is the decimal mark (12,5 or 2.75). Free; the Vietnamese money line is included.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "number": {
+            "type": "string",
+            "description": "The number to read, like \"1.250.000\", \"1250000\" or \"12,5\"."
+          },
+          "money": {
+            "type": "boolean",
+            "default": true,
+            "description": "Include the Vietnamese money line (đồng). Default true."
+          },
+          "chan": {
+            "type": "boolean",
+            "default": true,
+            "description": "End a whole money line with \"chẵn\". Default true."
+          },
+          "four": {
+            "type": "string",
+            "enum": [
+              "tu",
+              "bon"
+            ],
+            "default": "tu",
+            "description": "Read 24 as \"hai mươi tư\" (tu) or \"hai mươi bốn\" (bon)."
+          },
+          "zero": {
+            "type": "string",
+            "enum": [
+              "linh",
+              "le"
+            ],
+            "default": "linh",
+            "description": "The word for a missing tens digit: \"linh\" or \"lẻ\"."
+          }
+        },
+        "required": [
+          "number"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "vietnamese": {
+            "type": "string"
+          },
+          "english": {
+            "type": "string"
+          },
+          "money": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "vietnamese",
+          "english",
+          "money"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "convert_currency",
+      "title": "Convert money at today's exchange rate",
+      "description": "Convert an amount between currencies at today's market rate (updated daily), and for the Vietnamese đồng also Vietcombank's buy and sell prices. ISO codes like USD, EUR, JPY, CNY, KRW. Free.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number",
+            "minimum": 0,
+            "description": "The amount. Default 1."
+          },
+          "from": {
+            "type": "string",
+            "description": "The currency it is in, like USD."
+          },
+          "to": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "maxItems": 20,
+            "description": "The currencies to show it in, like [\"VND\", \"EUR\"]."
+          }
+        },
+        "required": [
+          "from",
+          "to"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "amount": {
+            "type": "number"
+          },
+          "from": {
+            "type": "string"
+          },
+          "rates_updated": {
+            "type": "string"
+          },
+          "results": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "bank": {
+            "type": "object"
+          }
+        },
+        "required": [
+          "amount",
+          "from",
+          "results"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "merge_pdf",
+      "title": "Merge PDFs into one",
+      "description": "Join 2 to 20 PDFs into one, in the order given. Free, with a daily limit per account. Give the file through get_upload_link (file_id) or a public link. The result link works for 24 hours; give it to the user exactly as returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "maxItems": 20,
+            "description": "file_ids from get_upload_link, in order. One upload link can hold several files: the user may choose them all at once there, and they come in the order chosen."
+          },
+          "file_urls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "maxItems": 8,
+            "description": "Or public https links to each PDF, in order. Result links from other YangOpen tools work too."
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "bytes_before": {
+            "type": "integer"
+          },
+          "pages": {
+            "type": "integer"
+          },
+          "width": {
+            "type": "integer"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "unchanged": {
+            "type": "boolean"
+          },
+          "runs_left_today": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "content_type",
+          "bytes"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "extract_pdf_pages",
+      "title": "Take pages out of a PDF (split)",
+      "description": "A new PDF with only the pages chosen, in the order written: split a PDF, or reorder its pages. Free, with a daily limit per account. Give the file through get_upload_link (file_id) or a public link. The result link works for 24 hours; give it to the user exactly as returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "The file_id from get_upload_link, once the user has uploaded the PDF there."
+          },
+          "file_url": {
+            "type": "string",
+            "description": "Or a public https link to the PDF. A result link from another YangOpen tool works too."
+          },
+          "pages": {
+            "type": "string",
+            "description": "Pages, counting from 1: \"1-3,5\", \"8-\" (8 to the end) or \"last\"."
+          }
+        },
+        "required": [
+          "pages"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "bytes_before": {
+            "type": "integer"
+          },
+          "pages": {
+            "type": "integer"
+          },
+          "width": {
+            "type": "integer"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "unchanged": {
+            "type": "boolean"
+          },
+          "runs_left_today": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "content_type",
+          "bytes"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "delete_pdf_pages",
+      "title": "Delete pages from a PDF",
+      "description": "The PDF without the pages named. Free, with a daily limit per account. Give the file through get_upload_link (file_id) or a public link. The result link works for 24 hours; give it to the user exactly as returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "The file_id from get_upload_link, once the user has uploaded the PDF there."
+          },
+          "file_url": {
+            "type": "string",
+            "description": "Or a public https link to the PDF. A result link from another YangOpen tool works too."
+          },
+          "pages": {
+            "type": "string",
+            "description": "Pages, counting from 1: \"1-3,5\", \"8-\" (8 to the end) or \"last\"."
+          }
+        },
+        "required": [
+          "pages"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "bytes_before": {
+            "type": "integer"
+          },
+          "pages": {
+            "type": "integer"
+          },
+          "width": {
+            "type": "integer"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "unchanged": {
+            "type": "boolean"
+          },
+          "runs_left_today": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "content_type",
+          "bytes"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "rotate_pdf",
+      "title": "Rotate PDF pages",
+      "description": "Turn every page, or the pages named, clockwise by 90, 180 or 270 degrees. Free, with a daily limit per account. Give the file through get_upload_link (file_id) or a public link. The result link works for 24 hours; give it to the user exactly as returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "The file_id from get_upload_link, once the user has uploaded the PDF there."
+          },
+          "file_url": {
+            "type": "string",
+            "description": "Or a public https link to the PDF. A result link from another YangOpen tool works too."
+          },
+          "angle": {
+            "type": "integer",
+            "enum": [
+              90,
+              180,
+              270
+            ],
+            "description": "Degrees clockwise. Use 270 to turn left."
+          },
+          "pages": {
+            "type": "string",
+            "description": "Pages, counting from 1: \"1-3,5\", \"8-\" (8 to the end) or \"last\". Default: every page."
+          }
+        },
+        "required": [
+          "angle"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "bytes_before": {
+            "type": "integer"
+          },
+          "pages": {
+            "type": "integer"
+          },
+          "width": {
+            "type": "integer"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "unchanged": {
+            "type": "boolean"
+          },
+          "runs_left_today": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "content_type",
+          "bytes"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "compress_pdf",
+      "title": "Make a PDF smaller",
+      "description": "Shrink a PDF, mostly by resizing its pictures. low keeps print quality, medium (default) suits the screen and email, high is smallest. A PDF that cannot get smaller comes back unchanged. Free, with a daily limit per account. Give the file through get_upload_link (file_id) or a public link. The result link works for 24 hours; give it to the user exactly as returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "The file_id from get_upload_link, once the user has uploaded the PDF there."
+          },
+          "file_url": {
+            "type": "string",
+            "description": "Or a public https link to the PDF. A result link from another YangOpen tool works too."
+          },
+          "level": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "default": "medium"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "bytes_before": {
+            "type": "integer"
+          },
+          "pages": {
+            "type": "integer"
+          },
+          "width": {
+            "type": "integer"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "unchanged": {
+            "type": "boolean"
+          },
+          "runs_left_today": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "content_type",
+          "bytes"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "pdf_to_images",
+      "title": "Turn PDF pages into pictures",
+      "description": "Each page as a PNG or JPEG picture. One page gives a picture; several give a ZIP of them. Up to 30 pages a call. Free, with a daily limit per account. Give the file through get_upload_link (file_id) or a public link. The result link works for 24 hours; give it to the user exactly as returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "The file_id from get_upload_link, once the user has uploaded the PDF there."
+          },
+          "file_url": {
+            "type": "string",
+            "description": "Or a public https link to the PDF. A result link from another YangOpen tool works too."
+          },
+          "pages": {
+            "type": "string",
+            "description": "Pages, counting from 1: \"1-3,5\", \"8-\" (8 to the end) or \"last\". Default: every page, up to 30."
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "png",
+              "jpg"
+            ],
+            "default": "png"
+          },
+          "dpi": {
+            "type": "integer",
+            "minimum": 72,
+            "maximum": 300,
+            "default": 150,
+            "description": "Sharpness: 150 for the screen, 300 for print."
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "bytes_before": {
+            "type": "integer"
+          },
+          "pages": {
+            "type": "integer"
+          },
+          "width": {
+            "type": "integer"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "unchanged": {
+            "type": "boolean"
+          },
+          "runs_left_today": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "content_type",
+          "bytes"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "images_to_pdf",
+      "title": "Put pictures into one PDF",
+      "description": "Make one PDF from 1 to 20 pictures, one per page, in the order given. Free, with a daily limit per account. Give the file through get_upload_link (file_id) or a public link. The result link works for 24 hours; give it to the user exactly as returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "maxItems": 20,
+            "description": "file_ids from get_upload_link, in order. One upload link can hold several files: the user may choose them all at once there, and they come in the order chosen."
+          },
+          "file_urls": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "minItems": 1,
+            "maxItems": 8,
+            "description": "Or public https links to each picture (JPEG, PNG, WebP, HEIC, GIF, BMP or TIFF), in order. Result links from other YangOpen tools work too."
+          },
+          "page_size": {
+            "type": "string",
+            "enum": [
+              "fit",
+              "a4"
+            ],
+            "default": "fit",
+            "description": "fit: each page the picture's size. a4: each picture on an A4 page."
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "bytes_before": {
+            "type": "integer"
+          },
+          "pages": {
+            "type": "integer"
+          },
+          "width": {
+            "type": "integer"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "unchanged": {
+            "type": "boolean"
+          },
+          "runs_left_today": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "content_type",
+          "bytes"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "compress_image",
+      "title": "Make a picture smaller",
+      "description": "Shrink a picture's file size, keeping its pixel size. Optionally change it to JPEG or WebP, which are smaller than PNG for photos. Free, with a daily limit per account. Give the file through get_upload_link (file_id) or a public link. The result link works for 24 hours; give it to the user exactly as returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "The file_id from get_upload_link, once the user has uploaded the picture (JPEG, PNG, WebP, HEIC, GIF, BMP or TIFF) there."
+          },
+          "file_url": {
+            "type": "string",
+            "description": "Or a public https link to the picture (JPEG, PNG, WebP, HEIC, GIF, BMP or TIFF). A result link from another YangOpen tool works too."
+          },
+          "quality": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 95,
+            "default": 75,
+            "description": "1 to 95; lower is smaller. Default 75."
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "keep",
+              "jpg",
+              "png",
+              "webp"
+            ],
+            "default": "keep",
+            "description": "keep (default), jpg, png or webp."
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "bytes_before": {
+            "type": "integer"
+          },
+          "pages": {
+            "type": "integer"
+          },
+          "width": {
+            "type": "integer"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "unchanged": {
+            "type": "boolean"
+          },
+          "runs_left_today": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "content_type",
+          "bytes"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "resize_image",
+      "title": "Resize a picture",
+      "description": "Change a picture's pixel size: by percent, or to a width and/or height (the shape kept unless fit is exact or cover). Free, with a daily limit per account. Give the file through get_upload_link (file_id) or a public link. The result link works for 24 hours; give it to the user exactly as returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "The file_id from get_upload_link, once the user has uploaded the picture (JPEG, PNG, WebP, HEIC, GIF, BMP or TIFF) there."
+          },
+          "file_url": {
+            "type": "string",
+            "description": "Or a public https link to the picture (JPEG, PNG, WebP, HEIC, GIF, BMP or TIFF). A result link from another YangOpen tool works too."
+          },
+          "percent": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 400,
+            "description": "Scale, like 50 for half. Give this, or width/height."
+          },
+          "width": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10000
+          },
+          "fit": {
+            "type": "string",
+            "enum": [
+              "contain",
+              "cover",
+              "exact"
+            ],
+            "default": "contain",
+            "description": "contain: fit inside the size, keeping the shape. cover: fill it and crop the overflow. exact: stretch."
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "keep",
+              "jpg",
+              "png",
+              "webp"
+            ],
+            "default": "keep"
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "bytes_before": {
+            "type": "integer"
+          },
+          "pages": {
+            "type": "integer"
+          },
+          "width": {
+            "type": "integer"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "unchanged": {
+            "type": "boolean"
+          },
+          "runs_left_today": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "content_type",
+          "bytes"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "convert_image",
+      "title": "Convert a picture (HEIC to JPG and more)",
+      "description": "Change a picture to JPEG, PNG or WebP: an iPhone HEIC photo to JPG, a PNG to WebP, a TIFF or BMP to PNG. Free, with a daily limit per account. Give the file through get_upload_link (file_id) or a public link. The result link works for 24 hours; give it to the user exactly as returned.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "The file_id from get_upload_link, once the user has uploaded the picture (JPEG, PNG, WebP, HEIC, GIF, BMP or TIFF) there."
+          },
+          "file_url": {
+            "type": "string",
+            "description": "Or a public https link to the picture (JPEG, PNG, WebP, HEIC, GIF, BMP or TIFF). A result link from another YangOpen tool works too."
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "jpg",
+              "png",
+              "webp"
+            ],
+            "description": "jpg, png or webp."
+          }
+        },
+        "required": [
+          "format"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "bytes_before": {
+            "type": "integer"
+          },
+          "pages": {
+            "type": "integer"
+          },
+          "width": {
+            "type": "integer"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "unchanged": {
+            "type": "boolean"
+          },
+          "runs_left_today": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "content_type",
+          "bytes"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "read_qr_code",
+      "title": "Read QR codes and barcodes in a picture",
+      "description": "The text of every QR code and barcode (EAN, UPC, Code 128…) found in a photo or screenshot. Free, with a daily limit per account.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "The file_id from get_upload_link, once the user has uploaded the picture (JPEG, PNG, WebP, HEIC, GIF, BMP or TIFF) there."
+          },
+          "file_url": {
+            "type": "string",
+            "description": "Or a public https link to the picture (JPEG, PNG, WebP, HEIC, GIF, BMP or TIFF). A result link from another YangOpen tool works too."
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "codes": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "runs_left_today": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "codes"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "make_qr_code",
+      "title": "Make a QR code",
+      "description": "A QR code picture (PNG) for a link, text, phone number or Wi-Fi login (WIFI:T:WPA;S:name;P:password;;). Free, with a daily limit per account. The link works for 24 hours.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000,
+            "description": "What the code holds."
+          },
+          "scale": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 40,
+            "default": 10,
+            "description": "Pixels per square. Default 10."
+          },
+          "error_correction": {
+            "type": "string",
+            "enum": [
+              "L",
+              "M",
+              "Q",
+              "H"
+            ],
+            "default": "M",
+            "description": "How much damage it survives: L, M (default), Q or H (use H to put a logo over it)."
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "content_type": {
+            "type": "string"
+          },
+          "bytes": {
+            "type": "integer"
+          },
+          "bytes_before": {
+            "type": "integer"
+          },
+          "pages": {
+            "type": "integer"
+          },
+          "width": {
+            "type": "integer"
+          },
+          "height": {
+            "type": "integer"
+          },
+          "unchanged": {
+            "type": "boolean"
+          },
+          "runs_left_today": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "url",
+          "expires_at",
+          "content_type",
+          "bytes"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "audio_to_text",
+      "title": "Write down what is said in a recording",
+      "description": "The words spoken in an audio or video file, with timings: a meeting, a lecture, a voice message. Vietnamese, English and about 100 other languages, found by itself or named. Up to 20 minutes a file; split a longer one. Free, 10 files a day per account. The sound is sent to Cloudflare's speech model to be written down and is not kept there.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "The file_id from get_upload_link, once the user has uploaded the audio or video file (MP3, M4A, WAV, OGG, FLAC, WebM or MP4, up to 20 minutes) there."
+          },
+          "file_url": {
+            "type": "string",
+            "description": "Or a public https link to the audio or video file (MP3, M4A, WAV, OGG, FLAC, WebM or MP4, up to 20 minutes). A result link from another YangOpen tool works too."
+          },
+          "language": {
+            "type": "string",
+            "description": "Optional language code like vi or en. Default: found from the sound."
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "language": {
+            "type": "string"
+          },
+          "duration_seconds": {
+            "type": "number"
+          },
+          "segments": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "runs_left_today": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "text"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    },
+    {
+      "name": "pdf_to_markdown",
+      "title": "Turn a PDF into Markdown",
+      "description": "The text of a PDF as clean Markdown, ready for an AI to read, search or quote (RAG): headings, lists and tables kept, columns in reading order, a running header or footer once. Scanned pages are read with OCR (Vietnamese, English, Chinese, Japanese, Korean), up to 40 scanned pages a file. Text set in the old Vietnamese fonts (TCVN3, VNI) comes out in Unicode. Up to 500 pages and 25 MB. Free, 50 files a day per account. A result up to 20,000 characters comes back here in full; a longer one as a link to the .md file (24 hours) with its beginning.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "file_id": {
+            "type": "string",
+            "description": "The file_id from get_upload_link, once the user has uploaded the PDF there."
+          },
+          "file_url": {
+            "type": "string",
+            "description": "Or a public https link to the PDF. A result link from another YangOpen tool works too."
+          },
+          "page_marks": {
+            "type": "boolean",
+            "default": false,
+            "description": "Put <!-- page N --> before each page, so a quote can name its page."
+          }
+        },
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "markdown": {
+            "type": "string"
+          },
+          "complete": {
+            "type": "boolean"
+          },
+          "pages": {
+            "type": "integer"
+          },
+          "ocr_pages": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "ocr_skipped": {
+            "type": "array",
+            "items": {
+              "type": "integer"
+            }
+          },
+          "tables": {
+            "type": "integer"
+          },
+          "chars": {
+            "type": "integer"
+          },
+          "url": {
+            "type": "string"
+          },
+          "expires_at": {
+            "type": "string"
+          },
+          "runs_left_today": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "markdown",
+          "complete",
+          "pages"
+        ]
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": true
+      }
+    }
+  ],
+  "resources": [],
+  "prompts": []
+}
