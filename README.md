@@ -1,3 +1,5 @@
+<img src="logo.png" alt="YangOpen" width="96" height="96">
+
 # YangOpen MCP server
 
 [![YangOpen MCP connector](https://glama.ai/mcp/connectors/com.yangopen/mcp/badges/score.svg)](https://glama.ai/mcp/connectors/com.yangopen/mcp)
@@ -21,7 +23,7 @@ This repository holds the documentation and directory manifests only. The server
 claude mcp add --transport http --scope user yangopen https://yangopen.com/mcp
 ```
 
-**Other clients:** add a remote (Streamable HTTP) server with the URL `https://yangopen.com/mcp`. The client needs OAuth support.
+**Cline, Cursor and other clients:** add a remote (Streamable HTTP) server with the URL `https://yangopen.com/mcp`. The client needs OAuth support. Step-by-step notes for AI agents: [llms-install.md](llms-install.md).
 
 ## Tools (27)
 
