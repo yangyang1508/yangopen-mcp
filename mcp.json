@@ -1,0 +1,9 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/mcp.schema.json",
+  "mcpServers": {
+    "yangopen": {
+      "type": "streamable-http",
+      "url": "https://yangopen.com/mcp"
+    }
+  }
+}

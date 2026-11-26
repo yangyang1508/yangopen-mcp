@@ -1,0 +1,14 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "yangopen",
+  "version": "1.7.0",
+  "description": "Hosted MCP server with 27 tools: Vietnamese-first text to speech, background removal, photo sharpening, PDF merge/split/compress, PDF to Markdown, image convert, QR codes and audio to text.",
+  "author": {
+    "name": "YangOpen",
+    "email": "contact@yangopen.com",
+    "url": "https://yangopen.com"
+  },
+  "homepage": "https://yangopen.com/guides/claude-mcp-connector/",
+  "repository": "https://github.com/yangyang1508/yangopen-mcp",
+  "keywords": ["mcp", "text-to-speech", "vietnamese", "pdf", "image", "qr-code", "speech-to-text"]
+}
