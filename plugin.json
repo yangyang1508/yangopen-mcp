@@ -10,5 +10,13 @@
   },
   "homepage": "https://yangopen.com/guides/claude-mcp-connector/",
   "repository": "https://github.com/yangyang1508/yangopen-mcp",
-  "keywords": ["mcp", "text-to-speech", "vietnamese", "pdf", "image", "qr-code", "speech-to-text"]
+  "keywords": [
+    "mcp",
+    "text-to-speech",
+    "vietnamese",
+    "pdf",
+    "image",
+    "qr-code",
+    "speech-to-text"
+  ]
 }
